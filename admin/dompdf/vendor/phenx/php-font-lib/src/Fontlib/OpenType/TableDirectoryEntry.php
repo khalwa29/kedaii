@@ -9,10 +9,10 @@
 namespace FontLib\OpenType;
 
 /**
- * Open Type font, the same as a TrueType one.
+ * Open Type Table directory entry, the same as a TrueType one.
  *
  * @package php-font-lib
  */
-class File extends \FontLib\TrueType\File {
-  //
+class TableDirectoryEntry extends \FontLib\TrueType\TableDirectoryEntry {
+
 }
