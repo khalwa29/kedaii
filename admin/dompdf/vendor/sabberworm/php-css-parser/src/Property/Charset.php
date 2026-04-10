@@ -4,22 +4,21 @@ namespace Sabberworm\CSS\Property;
 
 use Sabberworm\CSS\Comment\Comment;
 use Sabberworm\CSS\OutputFormat;
-use Sabberworm\CSS\Value\URL;
 
 /**
- * Class representing an `@import` rule.
+ * Class representing an `@charset` rule.
+ *
+ * The following restrictions apply:
+ * - May not be found in any CSSList other than the Document.
+ * - May only appear at the very top of a Document’s contents.
+ * - Must not appear more than once.
  */
-class Import implements AtRule
+class Charset implements AtRule
 {
-    /**
-     * @var URL
-     */
-    private $oLocation;
-
     /**
      * @var string
      */
-    private $sMediaQuery;
+    private $sCharset;
 
     /**
      * @var int
@@ -32,14 +31,12 @@ class Import implements AtRule
     protected $aComments;
 
     /**
-     * @param URL $oLocation
-     * @param string $sMediaQuery
+     * @param string $sCharset
      * @param int $iLineNo
      */
-    public function __construct(URL $oLocation, $sMediaQuery, $iLineNo = 0)
+    public function __construct($sCharset, $iLineNo = 0)
     {
-        $this->oLocation = $oLocation;
-        $this->sMediaQuery = $sMediaQuery;
+        $this->sCharset = $sCharset;
         $this->iLineNo = $iLineNo;
         $this->aComments = [];
     }
@@ -53,21 +50,21 @@ class Import implements AtRule
     }
 
     /**
-     * @param URL $oLocation
+     * @param string $sCharset
      *
      * @return void
      */
-    public function setLocation($oLocation)
+    public function setCharset($sCharset)
     {
-        $this->oLocation = $oLocation;
+        $this->sCharset = $sCharset;
     }
 
     /**
-     * @return URL
+     * @return string
      */
-    public function getLocation()
+    public function getCharset()
     {
-        return $this->oLocation;
+        return $this->sCharset;
     }
 
     /**
@@ -83,8 +80,7 @@ class Import implements AtRule
      */
     public function render(OutputFormat $oOutputFormat)
     {
-        return "@import " . $this->oLocation->render($oOutputFormat)
-            . ($this->sMediaQuery === null ? '' : ' ' . $this->sMediaQuery) . ';';
+        return "@charset {$this->sCharset->render($oOutputFormat)};";
     }
 
     /**
@@ -92,19 +88,15 @@ class Import implements AtRule
      */
     public function atRuleName()
     {
-        return 'import';
+        return 'charset';
     }
 
     /**
-     * @return array<int, URL|string>
+     * @return string
      */
     public function atRuleArgs()
     {
-        $aResult = [$this->oLocation];
-        if ($this->sMediaQuery) {
-            array_push($aResult, $this->sMediaQuery);
-        }
-        return $aResult;
+        return $this->sCharset;
     }
 
     /**

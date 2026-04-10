@@ -4,27 +4,26 @@ namespace Sabberworm\CSS\Property;
 
 use Sabberworm\CSS\Comment\Comment;
 use Sabberworm\CSS\OutputFormat;
-use Sabberworm\CSS\Value\URL;
 
 /**
- * Class representing an `@import` rule.
+ * `CSSNamespace` represents an `@namespace` rule.
  */
-class Import implements AtRule
+class CSSNamespace implements AtRule
 {
     /**
-     * @var URL
+     * @var string
      */
-    private $oLocation;
+    private $mUrl;
 
     /**
      * @var string
      */
-    private $sMediaQuery;
+    private $sPrefix;
 
     /**
      * @var int
      */
-    protected $iLineNo;
+    private $iLineNo;
 
     /**
      * @var array<array-key, Comment>
@@ -32,14 +31,14 @@ class Import implements AtRule
     protected $aComments;
 
     /**
-     * @param URL $oLocation
-     * @param string $sMediaQuery
+     * @param string $mUrl
+     * @param string|null $sPrefix
      * @param int $iLineNo
      */
-    public function __construct(URL $oLocation, $sMediaQuery, $iLineNo = 0)
+    public function __construct($mUrl, $sPrefix = null, $iLineNo = 0)
     {
-        $this->oLocation = $oLocation;
-        $this->sMediaQuery = $sMediaQuery;
+        $this->mUrl = $mUrl;
+        $this->sPrefix = $sPrefix;
         $this->iLineNo = $iLineNo;
         $this->aComments = [];
     }
@@ -50,24 +49,6 @@ class Import implements AtRule
     public function getLineNo()
     {
         return $this->iLineNo;
-    }
-
-    /**
-     * @param URL $oLocation
-     *
-     * @return void
-     */
-    public function setLocation($oLocation)
-    {
-        $this->oLocation = $oLocation;
-    }
-
-    /**
-     * @return URL
-     */
-    public function getLocation()
-    {
-        return $this->oLocation;
     }
 
     /**
@@ -83,8 +64,44 @@ class Import implements AtRule
      */
     public function render(OutputFormat $oOutputFormat)
     {
-        return "@import " . $this->oLocation->render($oOutputFormat)
-            . ($this->sMediaQuery === null ? '' : ' ' . $this->sMediaQuery) . ';';
+        return '@namespace ' . ($this->sPrefix === null ? '' : $this->sPrefix . ' ')
+            . $this->mUrl->render($oOutputFormat) . ';';
+    }
+
+    /**
+     * @return string
+     */
+    public function getUrl()
+    {
+        return $this->mUrl;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getPrefix()
+    {
+        return $this->sPrefix;
+    }
+
+    /**
+     * @param string $mUrl
+     *
+     * @return void
+     */
+    public function setUrl($mUrl)
+    {
+        $this->mUrl = $mUrl;
+    }
+
+    /**
+     * @param string $sPrefix
+     *
+     * @return void
+     */
+    public function setPrefix($sPrefix)
+    {
+        $this->sPrefix = $sPrefix;
     }
 
     /**
@@ -92,17 +109,17 @@ class Import implements AtRule
      */
     public function atRuleName()
     {
-        return 'import';
+        return 'namespace';
     }
 
     /**
-     * @return array<int, URL|string>
+     * @return array<int, string>
      */
     public function atRuleArgs()
     {
-        $aResult = [$this->oLocation];
-        if ($this->sMediaQuery) {
-            array_push($aResult, $this->sMediaQuery);
+        $aResult = [$this->mUrl];
+        if ($this->sPrefix) {
+            array_unshift($aResult, $this->sPrefix);
         }
         return $aResult;
     }
